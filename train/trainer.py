@@ -105,6 +105,9 @@ class Trainer(BaseTrainer):
             loss_regr_betas = torch.FloatTensor(1).fill_(0.).to(self.device)
         return loss_regr_pose, loss_regr_betas
 
+    def ordinal_loss(self):
+        
+
     def train_step(self, input_batch):
         self.model.train()
 

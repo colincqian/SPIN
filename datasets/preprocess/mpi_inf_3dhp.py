@@ -71,6 +71,7 @@ def train_data(dataset_path, openpose_path, out_path, joints_idx, scaleFactor, e
                     vid_file = os.path.join(seq_path,
                                             'imageSequence',
                                             'video_' + str(vid_i) + '.avi')
+
                     vidcap = cv2.VideoCapture(vid_file)
 
                     # process video
@@ -87,78 +88,80 @@ def train_data(dataset_path, openpose_path, out_path, joints_idx, scaleFactor, e
                         # save image
                         cv2.imwrite(imgname, image)
 
-                # per frame
-                cam_aa = cv2.Rodrigues(Rs[j])[0].T[0]
-                pattern = os.path.join(imgs_path, '*.jpg')
-                img_list = glob.glob(pattern)
-                for i, img_i in enumerate(img_list):
 
-                    # for each image we store the relevant annotations
-                    img_name = img_i.split('/')[-1]
-                    img_view = os.path.join('S' + str(user_i),
-                                            'Seq' + str(seq_i),
-                                            'imageFrames',
-                                            'video_' + str(vid_i),
-                                            img_name)
-                    joints = np.reshape(annot2[vid_i][0][i], (28, 2))[joints17_idx]
-                    S17 = np.reshape(annot3[vid_i][0][i], (28, 3))/1000
-                    S17 = S17[joints17_idx] - S17[4] # 4 is the root
-                    bbox = [min(joints[:,0]), min(joints[:,1]),
-                            max(joints[:,0]), max(joints[:,1])]
-                    center = [(bbox[2]+bbox[0])/2, (bbox[3]+bbox[1])/2]
-                    scale = scaleFactor*max(bbox[2]-bbox[0], bbox[3]-bbox[1])/200
 
-                    # check that all joints are visible
-                    x_in = np.logical_and(joints[:, 0] < w, joints[:, 0] >= 0)
-                    y_in = np.logical_and(joints[:, 1] < h, joints[:, 1] >= 0)
-                    ok_pts = np.logical_and(x_in, y_in)
-                    if np.sum(ok_pts) < len(joints_idx):
-                        continue
-                        
-                    part = np.zeros([24,3])
-                    part[joints_idx] = np.hstack([joints, np.ones([17,1])])
-                    json_file = os.path.join(openpose_path, 'mpi_inf_3dhp',
-                        img_view.replace('.jpg', '_keypoints.json'))
-                    openpose = read_openpose(json_file, part, 'mpi_inf_3dhp')
-
-                    S = np.zeros([24,4])
-                    S[joints_idx] = np.hstack([S17, np.ones([17,1])])
-
-                    # because of the dataset size, we only keep every 10th frame
-                    counter += 1
-                    if counter % 10 != 1:
-                        continue
-
-                    # store the data
-                    imgnames_.append(img_view)
-                    centers_.append(center)
-                    scales_.append(scale)
-                    parts_.append(part)
-                    Ss_.append(S)
-                    openposes_.append(openpose)
-                       
-    # store the data struct
-    if not os.path.isdir(out_path):
-        os.makedirs(out_path)
-    out_file = os.path.join(out_path, 'mpi_inf_3dhp_train.npz')
-    if fits_3d is not None:
-        fits_3d = np.load(fits_3d)
-        np.savez(out_file, imgname=imgnames_,
-                           center=centers_,
-                           scale=scales_,
-                           part=parts_,
-                           pose=fits_3d['pose'],
-                           shape=fits_3d['shape'],
-                           has_smpl=fits_3d['has_smpl'],
-                           S=Ss_,
-                           openpose=openposes_)
-    else:
-        np.savez(out_file, imgname=imgnames_,
-                           center=centers_,
-                           scale=scales_,
-                           part=parts_,
-                           S=Ss_,
-                           openpose=openposes_)        
+    #             # per frame
+    #             cam_aa = cv2.Rodrigues(Rs[j])[0].T[0]
+    #             pattern = os.path.join(imgs_path, '*.jpg')
+    #             img_list = glob.glob(pattern)
+    #             for i, img_i in enumerate(img_list):
+    #
+    #                 # for each image we store the relevant annotations
+    #                 img_name = img_i.split('/')[-1]
+    #                 img_view = os.path.join('S' + str(user_i),
+    #                                         'Seq' + str(seq_i),
+    #                                         'imageFrames',
+    #                                         'video_' + str(vid_i),
+    #                                         img_name)
+    #                 joints = np.reshape(annot2[vid_i][0][i], (28, 2))[joints17_idx]
+    #                 S17 = np.reshape(annot3[vid_i][0][i], (28, 3))/1000
+    #                 S17 = S17[joints17_idx] - S17[4] # 4 is the root
+    #                 bbox = [min(joints[:,0]), min(joints[:,1]),
+    #                         max(joints[:,0]), max(joints[:,1])]
+    #                 center = [(bbox[2]+bbox[0])/2, (bbox[3]+bbox[1])/2]
+    #                 scale = scaleFactor*max(bbox[2]-bbox[0], bbox[3]-bbox[1])/200
+    #
+    #                 # check that all joints are visible
+    #                 x_in = np.logical_and(joints[:, 0] < w, joints[:, 0] >= 0)
+    #                 y_in = np.logical_and(joints[:, 1] < h, joints[:, 1] >= 0)
+    #                 ok_pts = np.logical_and(x_in, y_in)
+    #                 if np.sum(ok_pts) < len(joints_idx):
+    #                     continue
+    #
+    #                 part = np.zeros([24,3])
+    #                 part[joints_idx] = np.hstack([joints, np.ones([17,1])])
+    #                 json_file = os.path.join(openpose_path, 'mpi_inf_3dhp',
+    #                     img_view.replace('.jpg', '_keypoints.json'))
+    #                 openpose = read_openpose(json_file, part, 'mpi_inf_3dhp')
+    #
+    #                 S = np.zeros([24,4])
+    #                 S[joints_idx] = np.hstack([S17, np.ones([17,1])])
+    #
+    #                 # because of the dataset size, we only keep every 10th frame
+    #                 counter += 1
+    #                 if counter % 10 != 1:
+    #                     continue
+    #
+    #                 # store the data
+    #                 imgnames_.append(img_view)
+    #                 centers_.append(center)
+    #                 scales_.append(scale)
+    #                 parts_.append(part)
+    #                 Ss_.append(S)
+    #                 openposes_.append(openpose)
+    #
+    # # store the data struct
+    # if not os.path.isdir(out_path):
+    #     os.makedirs(out_path)
+    # out_file = os.path.join(out_path, 'mpi_inf_3dhp_train.npz')
+    # if fits_3d is not None:
+    #     fits_3d = np.load(fits_3d)
+    #     np.savez(out_file, imgname=imgnames_,
+    #                        center=centers_,
+    #                        scale=scales_,
+    #                        part=parts_,
+    #                        pose=fits_3d['pose'],
+    #                        shape=fits_3d['shape'],
+    #                        has_smpl=fits_3d['has_smpl'],
+    #                        S=Ss_,
+    #                        openpose=openposes_)
+    # else:
+    #     np.savez(out_file, imgname=imgnames_,
+    #                        center=centers_,
+    #                        scale=scales_,
+    #                        part=parts_,
+    #                        S=Ss_,
+    #                        openpose=openposes_)
         
         
 def test_data(dataset_path, out_path, joints_idx, scaleFactor):

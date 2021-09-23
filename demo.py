@@ -117,6 +117,7 @@ if __name__ == '__main__':
 
     # Preprocess input image and generate predictions
     img, norm_img = process_image(args.img, args.bbox, args.openpose, input_res=constants.IMG_RES)
+
     with torch.no_grad():
         pred_rotmat, pred_betas, pred_camera = model(norm_img.to(device))
         pred_output = smpl(betas=pred_betas, body_pose=pred_rotmat[:,1:], global_orient=pred_rotmat[:,0].unsqueeze(1), pose2rot=False)

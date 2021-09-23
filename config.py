@@ -6,22 +6,23 @@ Things you need to change: *_ROOT that indicate the path to each dataset
 from os.path import join
 
 H36M_ROOT = ''
-LSP_ROOT = ''
-LSP_ORIGINAL_ROOT = ''
-LSPET_ROOT = ''
-MPII_ROOT = ''
-COCO_ROOT = ''
-MPI_INF_3DHP_ROOT = ''
-PW3D_ROOT = ''
+LSP_ROOT = '/local/home/chqian/Project/Dataset/LSP/lsp_dataset'
+LSP_ORIGINAL_ROOT = '/local/home/chqian/Project/Dataset/LSP/lsp_dataset_original'
+LSPET_ROOT = '/local/home/chqian/Project/Dataset/hr-lspet'
+MPII_ROOT = '/local/home/chqian/Project/Dataset/mpii_human_pose_v1'
+COCO_ROOT = '/local/home/chqian/Project/Dataset/COCO'
+MPI_INF_3DHP_ROOT = '/local/home/chqian/Project/Dataset/mpi_inf_3dhp'
+PW3D_ROOT = '/local/home/chqian/Project/data_generator_3DP/SMPL_data_generator/Dataset'
 UPI_S1H_ROOT = ''
+MY_3DP_ROOT = '/local/home/chqian/Project/data_generator_3DP/SMPL_data_generator/Dataset/output'
 
 # Output folder to save test/train npz files
-DATASET_NPZ_PATH = 'data/dataset_extras'
+DATASET_NPZ_PATH = 'data/my_dataset_npz'
 
 # Output folder to store the openpose detections
 # This is requires only in case you want to regenerate 
 # the .npz files with the annotations.
-OPENPOSE_PATH = 'datasets/openpose'
+OPENPOSE_PATH = '/local/home/chqian/Project/Dataset'
 
 # Path to test/train npz files
 DATASET_FILES = [ {'h36m-p1': join(DATASET_NPZ_PATH, 'h36m_valid_protocol1.npz'),
@@ -29,6 +30,8 @@ DATASET_FILES = [ {'h36m-p1': join(DATASET_NPZ_PATH, 'h36m_valid_protocol1.npz')
                    'lsp': join(DATASET_NPZ_PATH, 'lsp_dataset_test.npz'),
                    'mpi-inf-3dhp': join(DATASET_NPZ_PATH, 'mpi_inf_3dhp_valid.npz'),
                    '3dpw': join(DATASET_NPZ_PATH, '3dpw_test.npz'),
+
+                   #'3dpw': join('data/my_3DP', '3dpw_test.npz'),
                   },
 
                   {'h36m': join(DATASET_NPZ_PATH, 'h36m_train.npz'),
@@ -51,6 +54,8 @@ DATASET_FOLDERS = {'h36m': H36M_ROOT,
                    'coco': COCO_ROOT,
                    '3dpw': PW3D_ROOT,
                    'upi-s1h': UPI_S1H_ROOT,
+
+                    #'3dpw':MY_3DP_ROOT,
                 }
 
 CUBE_PARTS_FILE = 'data/cube_parts.npy'

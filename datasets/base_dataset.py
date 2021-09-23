@@ -186,6 +186,7 @@ class BaseDataset(Dataset):
             img = cv2.imread(imgname)[:,:,::-1].copy().astype(np.float32)
         except TypeError:
             print(imgname)
+
         orig_shape = np.array(img.shape)[:2]
 
         # Get SMPL parameters, if available
